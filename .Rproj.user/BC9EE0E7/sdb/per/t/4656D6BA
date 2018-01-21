@@ -1,0 +1,21 @@
+{
+    "collab_server" : "",
+    "contents" : "#Installing packaging \ninstall.packages(\"caret\")\ninstall.packages(\"NeuralNetTools\")\ninstall.packages(\"pROC\")\n#Loading required libraries\nlibrary(caret)\nlibrary(NeuralNetTools)\nrequire(pROC)\n#Reading data from the working directory\nCC<- read.csv(\"risk.csv\", header=TRUE)\n#setting seed for reproducibility\nset.seed(2)\n#Shuffling the data\nn <- nrow(CC)\nshuffled_data <- CC[sample(n),]\n#Splitting the data into 70% - 30%\nCervical_train <- 1:round(0.7 * n)\ntraining <- shuffled_data[Cervical_train, ]\nCervical_test<- (round(0.7 * n) + 1):n\ntesting <- shuffled_data[Cervical_test, ]\n#training five models namely Random forest, GBM,J48,Neural net, KNN\nRandomf <- train(as.factor(Biopsy) ~., data=training, method='rf')\nv<- varImp(RandomF, scale = FALSE)\nplot(v)\nGbmm <- train(as.factor(Biopsy) ~., data=training, method='gbm')\nj48d<- train(as.factor(Biopsy) ~., data=training, method='J48')\nnnetm <- train(as.factor(Biopsy) ~., data=training, method='nnet')\nprint(nnetm)\nplotnet(nnetm)\nplot(nnetm)\nknnm <- train(as.factor(Biopsy) ~., data=training, method='kknn')\nplot(knnm)\nprint(knnm)\n#Predicting model with testing values\nr1 <- predict(Randomf, newdata=testing)\nr2 <- predict(Gbmm, newdata=testing)\nr3 <- predict(j48d, newdata=testing)\nr4 <- predict(nnetm, newdata=testing)\nr5 <- predict(knnm, newdata=testing)\n#Creating data frame from predictor table\nDframe <- data.frame(r1, r2,r3,r4,r5,  Biopsy = testing$Biopsy)\n#ensembling using extreme gradient boosting\nens <- train(as.factor(Biopsy) ~ ., data = Dframe, method = \"xgbLinear\")\nprint(ens)\n#Predictor model for ensemble\nr6 <- predict(ens, newdata = testing)\n#Plotting ROC curve for ensemble model\npreprobs <- predict(ens,testing,type='prob')\nroc<- multiclass.roc(testing$Biopsy,preprobs[,2])\nprint(roc)\nauc(roc)\nplot(roc(testing$Biopsy,preprobs[,2]))\n\n#Creating confusion matrix for diifernet models\ncmatrix1 <- confusionMatrix(r1, testing$Biopsy,positive = \"1\") \ncmatrix1\ncmatrix2 <- confusionMatrix(r2, testing$Biopsy,positive = \"1\") \ncmatrix2\ncmatrix3 <- confusionMatrix(r3, testing$Biopsy,positive = \"1\") \ncmatrix3\ncmatrix4 <- confusionMatrix(r4, testing$Biopsy,positive = \"1\") \ncmatrix4\ncmatrix5 <- confusionMatrix(r5, testing$Biopsy,positive = \"1\") \ncmatrix5\n#Creating confusion matrix for ensemble model\ncmatrix6 <- confusionMatrix(r6, ens$Biopsy,positive = \"1\")\ncmatrix6\n\n\n",
+    "created" : 1512954281499.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "2433917034",
+    "id" : "4656D6BA",
+    "lastKnownWriteTime" : 1512968781,
+    "last_content_update" : 1512968781912,
+    "path" : "C:/Users/risha/Desktop/research_x16132335/EnsCode.R",
+    "project_path" : "EnsCode.R",
+    "properties" : {
+        "tempName" : "Untitled1"
+    },
+    "relative_order" : 1,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}
